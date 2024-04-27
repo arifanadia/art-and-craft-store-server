@@ -8,15 +8,12 @@ const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors());
-app.use(express())
-
-// craftsman
-// IFkWIkJSKeLdUrnc
+app.use(express.json());
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.taokb31.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-console.log(uri);
+
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -31,6 +28,20 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+    const craftStoreCollection = client.db('craftStoreDB').collection('craftStore')
+    app.get('/craftItems', async (req, res) => {
+      const cursor = craftStoreCollection.find();
+      console.log(cursor);
+      const result = await cursor.toArray();
+      res.send(result)
+    });
+
+    app.post("/craftsItems", async (req, res) => {
+      const addCraftItem = req.body;
+      console.log('nothing', addCraftItem);
+      const result = await craftStoreCollection.insertOne(addCraftItem);
+      res.send(result)
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -41,10 +52,10 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.get('/',(req,res)=> {
-    res.send('art and craft store are running')
+app.get('/', (req, res) => {
+  res.send('art and craft store are running')
 });
 
-app.listen(port,(req,res)=> {
-    console.log(`art and craft store are running on port : ${port}`);
+app.listen(port, (req, res) => {
+  console.log(`art and craft store are running on port : ${port}`);
 })

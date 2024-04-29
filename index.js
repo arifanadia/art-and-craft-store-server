@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
@@ -37,35 +37,43 @@ async function run() {
       res.send(result)
     });
 
+    app.get('/craftItems/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+      const result = await craftStoreCollection.findOne(query);
+      res.send(result)
+  })
+   
+
     app.post("/craftItems", async (req, res) => {
-      const addCraftItem = req.body;
-      console.log('nothing', addCraftItem);
-      const result = await craftStoreCollection.insertOne(addCraftItem);
-      res.send(result)
-    })
+    const addCraftItem = req.body;
+    console.log('nothing', addCraftItem);
+    const result = await craftStoreCollection.insertOne(addCraftItem);
+    res.send(result)
+  })
 
 
-    // user related api
-    app.get('/users', async (req, res) => {
-      const cursor = userCollection.find();
-      console.log(cursor);
-      const result = await cursor.toArray();
-      res.send(result)
-    });
+  // user related api
+  app.get('/users', async (req, res) => {
+    const cursor = userCollection.find();
+    console.log(cursor);
+    const result = await cursor.toArray();
+    res.send(result)
+  });
 
-    app.post('/users',async(req,res) => {
-      const user = req.body;
-      console.log(user);
-      const result = await userCollection.insertOne(user);
-      res.send(result)
-    })    
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
-  }
+  app.post('/users', async (req, res) => {
+    const user = req.body;
+    console.log(user);
+    const result = await userCollection.insertOne(user);
+    res.send(result)
+  })
+  // Send a ping to confirm a successful connection
+  await client.db("admin").command({ ping: 1 });
+  console.log("Pinged your deployment. You successfully connected to MongoDB!");
+} finally {
+  // Ensures that the client will close when you finish/error
+  // await client.close();
+}
 }
 run().catch(console.dir);
 

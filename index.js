@@ -44,6 +44,13 @@ async function run() {
       res.send(result)
   })
    
+    app.get('/myList/:email', async (req, res) => {
+      const email = req.params.email;
+      console.log(email);
+      const result = await craftStoreCollection.find({email : email}).toArray();
+      res.send(result)
+  })
+   
 
     app.post("/craftItems", async (req, res) => {
     const addCraftItem = req.body;

@@ -39,48 +39,129 @@ async function run() {
 
     app.get('/craftItems/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await craftStoreCollection.findOne(query);
       res.send(result)
-  })
-   
+    })
+
     app.get('/myList/:email', async (req, res) => {
       const email = req.params.email;
-      console.log(email);
-      const result = await craftStoreCollection.find({email : email}).toArray();
+      // console.log(email);
+      const result = await craftStoreCollection.find({ email: email }).toArray();
       res.send(result)
-  })
-   
+    })
+
+ 
+
 
     app.post("/craftItems", async (req, res) => {
-    const addCraftItem = req.body;
-    console.log('nothing', addCraftItem);
-    const result = await craftStoreCollection.insertOne(addCraftItem);
-    res.send(result)
-  })
+      const addCraftItem = req.body;
+      console.log('nothing', addCraftItem);
+      const result = await craftStoreCollection.insertOne(addCraftItem);
+      res.send(result)
+    })
+    app.put('/updateItem/:id', async (req, res) => {
+      const id = req.params.id;
+      // console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const data = {
+        $set: {
+          image: req.body.image,
+          itemName: req.body.itemName,
+          subCategory: req.body.subCategory,
+          description: req.body.description,
+          priceType: req.body.priceType,
+          price: req.body.price,
+          customize: req.body.customize,
+          stock: req.body.stock,
+          processTime: req.body.processTime,
+          rating: req.body.rating
+        }
+       
+      }
+      const result = await craftStoreCollection.updateOne(query,data,options);
+        res.send(result);
+    });
+
+       app.put('/updateItem/:id', async (req, res) => {
+      const id = req.params.id;
+      // console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const data = {
+        $set: {
+          image: req.body.image,
+          itemName: req.body.itemName,
+          subCategory: req.body.subCategory,
+          description: req.body.description,
+          priceType: req.body.priceType,
+          price: req.body.price,
+          customize: req.body.customize,
+          stock: req.body.stock,
+          processTime: req.body.processTime,
+          rating: req.body.rating
+        }
+       
+      }
+      const result = await craftStoreCollection.updateOne(query,data,options);
+        res.send(result);
+    });   app.put('/updateItem/:id', async (req, res) => {
+      const id = req.params.id;
+      // console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const data = {
+        $set: {
+          image: req.body.image,
+          itemName: req.body.itemName,
+          subCategory: req.body.subCategory,
+          description: req.body.description,
+          priceType: req.body.priceType,
+          price: req.body.price,
+          customize: req.body.customize,
+          stock: req.body.stock,
+          processTime: req.body.processTime,
+          rating: req.body.rating
+        }
+       
+      }
+      const result = await craftStoreCollection.updateOne(query,data,options);
+        res.send(result);
+    });
 
 
-  // user related api
-  app.get('/users', async (req, res) => {
-    const cursor = userCollection.find();
-    console.log(cursor);
-    const result = await cursor.toArray();
-    res.send(result)
+    app.delete('/delete/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await coffeeCollection.deleteOne(query);
+      res.send(result)
   });
 
-  app.post('/users', async (req, res) => {
-    const user = req.body;
-    console.log(user);
-    const result = await userCollection.insertOne(user);
-    res.send(result)
-  })
-  // Send a ping to confirm a successful connection
-  await client.db("admin").command({ ping: 1 });
-  console.log("Pinged your deployment. You successfully connected to MongoDB!");
-} finally {
-  // Ensures that the client will close when you finish/error
-  // await client.close();
-}
+
+    // user related api
+    app.get('/users', async (req, res) => {
+      const cursor = userCollection.find();
+      console.log(cursor);
+      const result = await cursor.toArray();
+      res.send(result)
+    });
+
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const result = await userCollection.insertOne(user);
+      res.send(result)
+    });
+
+
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    // await client.close();
+  }
 }
 run().catch(console.dir);
 

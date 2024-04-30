@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const categories = require('./category.json')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
@@ -27,9 +28,12 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     const craftStoreCollection = client.db('craftStoreDB').collection('craftStore');
+    // const craftCategoriesCollection = client.db('craftStoreDB').collection('categories');
     const userCollection = client.db('craftStoreDB').collection('users');
+
+
     app.get('/craftItems', async (req, res) => {
       const cursor = craftStoreCollection.find();
       console.log(cursor);
@@ -51,7 +55,7 @@ async function run() {
       res.send(result)
     })
 
- 
+
 
 
     app.post("/craftItems", async (req, res) => {
@@ -59,7 +63,8 @@ async function run() {
       console.log('nothing', addCraftItem);
       const result = await craftStoreCollection.insertOne(addCraftItem);
       res.send(result)
-    })
+    });
+
     app.put('/updateItem/:id', async (req, res) => {
       const id = req.params.id;
       // console.log(id);
@@ -78,57 +83,12 @@ async function run() {
           processTime: req.body.processTime,
           rating: req.body.rating
         }
-       
+
       }
-      const result = await craftStoreCollection.updateOne(query,data,options);
-        res.send(result);
+      const result = await craftStoreCollection.updateOne(query, data, options);
+      res.send(result);
     });
 
-       app.put('/updateItem/:id', async (req, res) => {
-      const id = req.params.id;
-      // console.log(id);
-      const query = { _id: new ObjectId(id) };
-      const options = { upsert: true };
-      const data = {
-        $set: {
-          image: req.body.image,
-          itemName: req.body.itemName,
-          subCategory: req.body.subCategory,
-          description: req.body.description,
-          priceType: req.body.priceType,
-          price: req.body.price,
-          customize: req.body.customize,
-          stock: req.body.stock,
-          processTime: req.body.processTime,
-          rating: req.body.rating
-        }
-       
-      }
-      const result = await craftStoreCollection.updateOne(query,data,options);
-        res.send(result);
-    });   app.put('/updateItem/:id', async (req, res) => {
-      const id = req.params.id;
-      // console.log(id);
-      const query = { _id: new ObjectId(id) };
-      const options = { upsert: true };
-      const data = {
-        $set: {
-          image: req.body.image,
-          itemName: req.body.itemName,
-          subCategory: req.body.subCategory,
-          description: req.body.description,
-          priceType: req.body.priceType,
-          price: req.body.price,
-          customize: req.body.customize,
-          stock: req.body.stock,
-          processTime: req.body.processTime,
-          rating: req.body.rating
-        }
-       
-      }
-      const result = await craftStoreCollection.updateOne(query,data,options);
-        res.send(result);
-    });
 
 
     app.delete('/delete/:id', async (req, res) => {
@@ -136,7 +96,13 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await coffeeCollection.deleteOne(query);
       res.send(result)
-  });
+    });
+
+    // categories api
+
+    app.get('/categories', async (req, res) => {
+      res.send(categories)
+    });
 
 
     // user related api
@@ -156,7 +122,7 @@ async function run() {
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
